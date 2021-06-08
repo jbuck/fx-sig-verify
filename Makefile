@@ -10,7 +10,8 @@ VENV_NAME=venv
 NOW := $(shell date -u +%Y-%m-%dT%H:%M:%S)
 
 # dev account defaults
-ECR_REPO_NAME=fx-sig-verify-dev
+AWS_ACCOUNT_ID=361527076523
+ECR_REPO_NAME=fx-sig-verify
 
 # Defaults for docker-debug
 PRODUCTION_DEFAULT = 0	# set to 1 for skips
@@ -52,9 +53,9 @@ clean:
 .PHONY: upload
 upload: docker-build-prod
 	@echo "Using AWS credentials for $$AWS_DEFAULT_PROFILE in $$AWS_REGION"
-	docker tag fxsigverify  927034868273.dkr.ecr.us-west-2.amazonaws.com/$(ECR_REPO_NAME)
-	aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 927034868273.dkr.ecr.us-west-2.amazonaws.com ;\
-	    docker push 927034868273.dkr.ecr.us-west-2.amazonaws.com/$(ECR_REPO_NAME)
+	docker tag fxsigverify $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(ECR_REPO_NAME)
+	aws ecr get-login-password --region $(AWS_REGION) | docker login --username AWS --password-stdin $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com
+	docker push $(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(ECR_REPO_NAME)
 
 .PHONY: publish
 publish: upload
